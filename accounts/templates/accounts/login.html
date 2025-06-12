@@ -1,84 +1,54 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <title>Login - Career Portal</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-        }
-
-        .container {
-            max-width: 400px;
-            margin: 80px auto;
-            background-color: white;
-            padding: 30px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        input[type=email],
-        input[type=password] {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 10px;
-            background-color: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #3367d6;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
-        
+    <div class="image-section">
+        <!-- Static image displayed on login page -->
+        <img src="{% static 'img/undraw_hello_ccwj.svg' %}" alt="Job Portal Illustration">
+    </div>
+
+    <!-- Right section with login form -->
+    <div class="login-content-section">
+        <h2>Welcome Back!</h2>
+
+        <!-- Display Django messages (e.g. errors) if any -->
         {% if messages %}
             {% for message in messages %}
                 <p class="error">{{ message }}</p>
             {% endfor %}
         {% endif %}
 
+        <!-- Login form starts here -->
         <form method="post">
-            {% csrf_token %}
-            {{ form.email.label_tag }}
-            {{ form.email }}
+            {% csrf_token %} <!-- Protects against CSRF attacks -->
 
-            {{ form.password.label_tag }}
-            {{ form.password }}
+            <!-- Email input field -->
+            <div class="form-group">
+                {{ form.email.label_tag }} <!-- Email label -->
+                {{ form.email }} <!-- Email input -->
+            </div>
 
+            <!-- Password input field -->
+            <div class="form-group">
+                {{ form.password.label_tag }} <!-- Password label -->
+                {{ form.password }} <!-- Password input -->
+            </div>
+
+            <!-- Submit button -->
             <button type="submit" class="btn">Login</button>
         </form>
-        <p style="text-align: center; margin-top: 15px;">
-            <a href="{% url 'password_reset' %}">Forgot Password?</a>
-        </p>        
-        <p style="text-align: center; margin-top: 15px;">
-            Don't have an account? <a href="{% url 'register' %}">Register</a>
-        </p>
+
+        <!-- Additional links for password reset and registration -->
+        <div class="links">
+            <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
+            <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+        </div>
     </div>
 </body>
 </html>

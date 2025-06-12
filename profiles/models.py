@@ -1,21 +1,23 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
 
 class UserProfile(models.Model):
+    # Choices for gender field
     GENDER_CHOICES = [
         ('male', 'Male'),
         ('female', 'Female')
     ]
-
+    # Choices for work experience
     EXPERIENCE_CHOICES = [
         ('fresher', 'Fresher'),
         ('1-2 years', '1-2 Years'),
         ('3-5 years', '3-5 Years'),
         ('5+ years', '5+ Years'),
     ]
-
+    # Choices for education levels
     EDUCATION_CHOICES = [
     ("highschool", "High School"),
     ("diploma", "Diploma"),
@@ -23,6 +25,7 @@ class UserProfile(models.Model):
     ("masters", "Master's"),
     ("phd", "PhD"),
     ]
+    # One-to-one relationship with the User model
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=False, null=False)
     dob = models.DateField(null=True, blank=True)
@@ -31,6 +34,8 @@ class UserProfile(models.Model):
     skills = models.JSONField(default=list)
     photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     resume = models.FileField(upload_to='resumes/', blank=True, null=True)  
+
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.user.name}'s Profile"

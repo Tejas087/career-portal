@@ -1,301 +1,164 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            margin-top: 5px;
-        }
-
-        .skills-box {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .skill-tag {
-            background-color: #808080;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .skill-tag span {
-            margin-left: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn {
-            margin-top: 20px;
-            width: 100%;
-            padding: 10px;
-            background-color: #3367d6;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #264ca6;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}" />
 </head>
 <body>
-{% if not is_editing %}
-    <div class="container">
-        <h2>Your Profile</h2>
-
-        <p>
-            {% if profile.photo %}
-                <img src="{{ profile.photo.url }}" alt="Profile Photo" width="150" height="150"><br>
-            {% else %}
-                <strong>No photo uploaded.</strong>
-            {% endif %}
-        </p>
-
-        <p><strong>Name:</strong> {{ request.user.name }}</p>
-        <p><strong>Email:</strong> {{ request.user.email }}</p>
-        <p><strong>Mobile No:</strong> {{ request.user.mobile_no }}</p>
-        <p><strong>Gender:</strong> {{ profile.gender }}</p>
-        <p><strong>Date of Birth:</strong> {{ profile.dob|date:"d-m-Y" }}</p>
-        <p><strong>Education:</strong> {{ profile.education|capfirst }}</p>
-        <p><strong>Work Experience:</strong> {{ profile.work_experience }}</p>
-
-        <p><strong>Skills:</strong>
-            {% if skills %}
-                {% for skill in skills %}
-                    <span class="skill-tag">{{ skill }}</span>
-                {% endfor %}
-            {% else %}
-                None
-            {% endif %}
-        </p>
-
-        <p><strong>Resume:</strong><br>
-            {% if profile.resume %}
-                <a href="{{ profile.resume.url }}" target="_blank">Download Resume</a>
-            {% else %}
-                No resume uploaded.
-            {% endif %}
-        </p>
-
-        <a href="?edit=1" class="btn">Edit Profile</a>
+    <div class="main-header-container">
+        <div class="header container">
+            <img src="{% static 'images/logo.png' %}" class="logo" alt="Company Logo" />
+            <nav>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="#">Jobs</a></li>
+                    <li><a href="#">Companies</a></li>
+                    <li><a href="{% url 'profile' %}" class="profile-btn">Profile</a></li>
+                    <li><a href="javascript:void(0);" class="logout-trigger">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
     </div>
 
-{% else %}  
-    <div class="container">
-        <h2>Update Profile</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+    <section class="profile-page-wrapper">
+        {% if not is_editing %}
+            <div class="container">
+                <div class="profile-card-header">
+                    {% if profile.photo %}
+                        <img src="{{ profile.photo.url }}" alt="Profile Photo" class="profile-avatar" />
+                    {% else %}
+                        <div class="profile-avatar-placeholder">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    {% endif %}
 
-            <label>Name</label>
-            {{ form.name }}
-
-            <label>Email</label>
-            {{ form.email }}
-
-            <label>Mobile Number</label>
-            {{ form.mobile_no }}
-
-            <label>Gender:</label>
-            <div class="radio-group">
-                {{ form.gender }}
-            </div>
-            <label>Date of Birth:</label>
-                {{ form.dob }}
-            <label>Education:</label>
-            {{ form.education }}
-
-            <label>Work Experience:</label>
-            {{ form.work_experience }}
-
-            <label>Skills:</label>
-            <input type="text" id="skill-input" placeholder="Type a skill and press Enter">
-            <div class="skills-box" id="skills-container">
-                {% for skill in skills %}
-                    <div class="skill-tag">{{ skill }}<span onclick="removeSkill(this)">×</span>
-                        <input type="hidden" name="skills[]" value="{{ skill }}">
+                    <div class="header-info">
+                        <h1>{{ profile.user.name }}</h1>
+                        <p class="email-mobile"><i class="fas fa-envelope"></i> {{ profile.user.email }}</p>
+                        <p class="email-mobile"><i class="fas fa-phone"></i> {{ profile.user.mobile_no }}</p>
+                        <p class="work-status">Status: {{ profile.user.work_status|capfirst }}</p>
                     </div>
-                {% endfor %}
+                </div>
+
+                <div class="profile-section">
+                    <h2>Personal Details</h2>
+                    <p><strong>Gender:</strong> {{ profile.gender|default:"N/A" }}</p>
+                    <p><strong>Date of Birth:</strong> {{ profile.dob|date:"d-m-Y"|default:"N/A" }}</p>
+                </div>
+
+                <div class="profile-section">
+                    <h2>Professional Information</h2>
+                    <p><strong>Education:</strong> {{ profile.education|capfirst|default:"N/A" }}</p>
+                    <p><strong>Work Experience:</strong> {{ profile.work_experience|default:"N/A" }}</p>
+                </div>
+
+                <div class="profile-section">
+                    <h2>Skills & Expertise</h2>
+                    <div class="skills-box view-mode">
+                        {% if skills %}
+                            {% for skill in skills %}
+                                <span class="skill-tag view-mode">{{ skill }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p>No skills added yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h2>Documents</h2>
+                    <p><strong>Resume:</strong></p>
+                    {% if profile.resume %}
+                        <a href="{{ profile.resume.url }}" target="_blank" class="document-link"><i class="fas fa-file-pdf"></i> Download Resume</a>
+                    {% else %}
+                        <p>No resume uploaded.</p>
+                    {% endif %}
+                </div>
+
+                <a href="?edit=1" class="btn">Edit Profile</a>
             </div>
 
-            <div>
-                <p><strong>Select from suggested skills:</strong></p>
-                <div id="checkbox-container">
-                    {% for option in all_skills %}
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="{{ option }}"
-                                onclick="toggleSkill(this)"
-                                {% if option in skills %} checked {% endif %}>
-                            {{ option }}
-                        </label><br>
+        {% else %} <!-- is_editing is True -->
+            <div class="container">
+                <h2>Update Profile</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        {% if field.name not in 'photo resume skill_input' %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     {% endfor %}
-                </div>
+
+                    <label for="skill-input">Skills:</label>
+                    <input type="text" id="skill-input" placeholder="Type a skill and press Enter" />
+                    <div class="skills-box" id="skills-container">
+                        {% for skill in skills %}
+                            <div class="skill-tag">{{ skill }}<span onclick="removeSkill(this)">×</span>
+                                <input type="hidden" name="skills[]" value="{{ skill }}" />
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="suggested-skills-section">
+                        <p><strong>Select from suggested skills:</strong></p>
+                        <div id="checkbox-container" class="checkbox-skills-grid">
+                            {% for option in all_skills %}
+                                <label class="checkbox-skill-label">
+                                    <input
+                                        type="checkbox"
+                                        value="{{ option }}"
+                                        onclick="toggleSkill(this)"
+                                        {% if option in skills %} checked {% endif %} />
+                                    {{ option }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <label>Profile Photo:</label>
+                    <div class="current-photo-display">
+                        {% if profile.photo %}
+                            <img src="{{ profile.photo.url }}" alt="Current Profile Photo" width="120" height="120" />
+                            <a href="#" class="remove-file-btn" onclick="document.getElementById('id_photo-clear').checked=true; this.style.display='none'; this.previousElementSibling.style.display='none';">Remove Photo</a>
+                            <input type="checkbox" name="photo-clear" id="id_photo-clear" style="display: none;" />
+                        {% endif %}
+                        <input type="file" name="photo" accept="image/*" class="file-input" />
+                    </div>
+
+                    <label>Resume (PDF only):</label>
+                    <div class="current-resume-display">
+                        {% if profile.resume %}
+                            <a href="{{ profile.resume.url }}" target="_blank" class="document-link"><i class="fas fa-file-pdf"></i> See Current Resume</a>
+                            <a href="#" class="remove-file-btn" onclick="document.getElementById('id_resume-clear').checked=true; this.style.display='none'; this.previousElementSibling.style.display='none';">Remove Resume</a>
+                            <input type="checkbox" name="resume-clear" id="id_resume-clear" style="display: none;" />
+                        {% endif %}
+                        <input type="file" name="resume" accept=".pdf" class="file-input" />
+                    </div>
+
+                    <button type="submit" class="btn">Save Profile</button>
+                    <a href="{% url 'profile' %}" class="btn" style="background: none; border: 1px solid var(--primary-purple); color: var(--primary-purple); margin-top: 15px; box-shadow: none;">Cancel</a>
+                </form>
             </div>
+        {% endif %}
+    </section>
 
-            <label>Profile Photo:</label>
-            {% if profile.photo %}
-                <div>
-                    <img src="{{ profile.photo.url }}" alt="Profile Photo" width="120" height="120">
-                </div>
-            {% endif %}
-            <input type="file" name="photo" accept="image/*">
+    <!-- Hidden form for logout -->
+    <form id="logoutForm" method="post" action="{% url 'logout' %}" class="logout-form">
+        {% csrf_token %}
+    </form>
 
-
-            <label>Resume (PDF only):</label>
-            {% if profile.resume %}
-                <div>
-                    <a href="{{ profile.resume.url }}" target="_blank">See Current Resume</a><br>
-                    
-                </div>
-            {% endif %}
-            <input type="file" name="resume" accept=".pdf">
-
-            <button type="submit" class="btn">Save Profile</button>
-        </form>
-    </div>
-
-    <script>
-        const input = document.getElementById("skill-input");
-        const container = document.getElementById("skills-container");
-
-        input.addEventListener("keydown", function(e) {
-            if (e.key === "Enter" && input.value.trim() !== "") {
-                e.preventDefault();
-                const skill = input.value.trim();
-
-                const existingSkills = Array.from(container.querySelectorAll("input[name='skills[]']"))
-                                            .map(i => i.value.toLowerCase());
-
-                if (!existingSkills.includes(skill.toLowerCase())) {
-                    addSkill(skill);
-                }
-
-                input.value = "";
-            }
-        });
-
-        function addSkill(skill) {
-            const tag = document.createElement("div");
-            tag.className = "skill-tag";
-            tag.innerHTML = `${skill}<span onclick="removeSkill(this)">×</span>`;
-
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "skills[]";
-            hiddenInput.value = skill;
-            tag.appendChild(hiddenInput);
-
-            container.appendChild(tag);
-
-            addCheckbox(skill);
-        }
-
-        function removeSkill(el) {
-            const tag = el.parentElement;
-            const skill = tag.querySelector("input[name='skills[]']").value;
-
-            const checkboxes = document.querySelectorAll("input[type='checkbox']");
-            checkboxes.forEach(cb => {
-                if (cb.value.toLowerCase() === skill.toLowerCase()) {
-                    cb.checked = false;
-                }
-            });
-
-            tag.remove();
-        }
-
-        function toggleSkill(checkbox) {
-            const skill = checkbox.value.trim();
-
-            const existingSkills = Array.from(container.querySelectorAll("input[name='skills[]']"))
-                                        .map(i => i.value.toLowerCase());
-
-            if (checkbox.checked) {
-                if (!existingSkills.includes(skill.toLowerCase())) {
-                    addSkill(skill);
-                }
-            } else {
-                const tags = container.querySelectorAll(".skill-tag");
-                tags.forEach(tag => {
-                    const value = tag.querySelector("input").value;
-                    if (value.toLowerCase() === skill.toLowerCase()) {
-                        tag.remove();
-                    }
-                });
-            }
-        }
-
-        function addCheckbox(skill) {
-            const checkboxContainer = document.getElementById("checkbox-container");
-
-            const exists = Array.from(checkboxContainer.querySelectorAll("input[type='checkbox']"))
-                                .some(cb => cb.value.toLowerCase() === skill.toLowerCase());
-            if (!exists) {
-                const label = document.createElement("label");
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.value = skill;
-                checkbox.checked = true;
-                checkbox.onclick = function () {
-                    toggleSkill(this);
-                };
-
-                label.appendChild(checkbox);
-                label.append(` ${skill}`);
-                checkboxContainer.appendChild(label);
-                checkboxContainer.appendChild(document.createElement("br"));
-            }
-        }
-    </script>
-{% endif %}
+    <script src="{% static 'js/profile.js' %}"></script>
 </body>
 </html>

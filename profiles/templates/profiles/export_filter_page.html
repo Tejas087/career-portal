@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Profiles with Filters</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/export_profiles.css' %}">
+</head>
+<body>
+    <!-- Header Section: consistent navigation across pages -->
+    <div class="main-header-container">
+        <div class="header container">
+            <img src="{% static 'images/logo.png' %}" class="logo" alt="Company Logo">
+
+            <!-- Navigation menu -->
+            <nav>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="#">Jobs</a></li>
+                    <li><a href="#">Companies</a></li>
+                    <li><a href="{% url 'profile' %}" class="profile-btn">Profile</a></li>
+
+                    <!-- Logout link triggers hidden form submission -->
+                    <li><a href="javascript:void(0);" class="logout-trigger">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main content wrapper -->
+    <div class="main-content-wrapper">
+        <h2>Export Profiles with Filters</h2>
+
+        <!-- Filter form submits GET request to the export filtering view -->
+        <form method="get" action="{% url 'export_filter_page' %}">
+
+            <!-- Gender filter dropdown -->
+            <div class="filter-group">
+                <label for="gender">Gender:</label>
+                <select name="gender" id="gender">
+                    <option value="">All</option>
+                    <option value="male" {% if request.GET.gender == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if request.GET.gender == 'female' %}selected{% endif %}>Female</option>
+                </select>
+            </div>
+
+            <!-- Education filter dropdown -->
+            <div class="filter-group">
+                <label for="education">Education:</label>
+                <select name="education" id="education">
+                    <option value="">All</option>
+                    <option value="highschool" {% if request.GET.education == 'highschool' %}selected{% endif %}>High School</option>
+                    <option value="diploma" {% if request.GET.education == 'diploma' %}selected{% endif %}>Diploma</option>
+                    <option value="bachelors" {% if request.GET.education == 'bachelors' %}selected{% endif %}>Bachelors</option>
+                    <option value="masters" {% if request.GET.education == 'masters' %}selected{% endif %}>Masters</option>
+                    <option value="phd" {% if request.GET.education == 'phd' %}selected{% endif %}>PhD</option>
+                </select>
+            </div>
+
+            <!-- Skills filter as text input (comma separated) -->
+            <div class="filter-group">
+                <label for="skills">Skill:</label>
+                <input type="text" name="skills" id="skills" placeholder="e.g. python, django" value="{{ request.GET.skills|default:'' }}">
+            </div>
+
+            <!-- Work experience filter dropdown -->
+            <div class="filter-group">
+                <label for="work_experience">Work Experience:</label>
+                <select name="work_experience" id="work_experience">
+                    <option value="">All</option>
+                    <option value="Fresher" {% if request.GET.work_experience == 'Fresher' %}selected{% endif %}>Fresher</option>
+                    <option value="1-2 years" {% if request.GET.work_experience == '1-2 years' %}selected{% endif %}>1–2 years</option>
+                    <option value="3-5 years" {% if request.GET.work_experience == '3-5 years' %}selected{% endif %}>3–5 years</option>
+                    <option value="5+ years" {% if request.GET.work_experience == '5+ years' %}selected{% endif %}>5+ years</option>
+                </select>
+            </div>
+
+            <!-- Filter for profiles created after a certain date -->
+            <div class="filter-group">
+                <label for="created_date">Created After (YYYY-MM-DD):</label>
+                <input type="date" name="created_date" id="created_date" value="{{ request.GET.created_date|default:'' }}">
+            </div>
+
+            <!-- Submit buttons: Search or Download Excel -->
+            <div class="button-group">
+                <button type="submit">Search</button>
+
+                <!-- If user clicks this button, download param is sent and triggers Excel export -->
+                <button type="submit" name="download" value="1">Download Excel</button>
+            </div>
+        </form>
+
+        <!-- Display the filtered profiles if any exist -->
+        {% if profiles %}
+            <h3>Filtered Results:</h3>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                            <th>Gender</th>
+                            <th>Education</th>
+                            <th>Work Experience</th>
+                            <th>Skills</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Loop through each profile and display relevant fields -->
+                        {% for profile in profiles %}
+                        <tr>
+                            <td>{{ profile.user.name }}</td>
+                            <td>{{ profile.user.email }}</td>
+                            <td>{{ profile.user.mobile_no }}</td>
+                            <td>{{ profile.gender|default:"N/A" }}</td>
+                            <td>{{ profile.education|default:"N/A" }}</td>
+                            <td>{{ profile.work_experience|default:"N/A" }}</td>
+                            <td>{{ profile.skills|join:", "|default:"N/A" }}</td>
+                            <td>{{ profile.created_at|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- Show message if no profiles matched the filters -->
+            <p>No profiles match the filters.</p>
+        {% endif %}
+    </div>
+
+    <!-- Hidden form to handle logout via POST -->
+    <form id="logoutForm" method="post" action="{% url 'logout' %}" class="logout-form">
+        {% csrf_token %}
+    </form>
+
+    <!-- Include external JS file for logout functionality or other JS -->
+    <script src="{% static 'js/export_profiles.js' %}"></script>
+</body>
+</html>

@@ -1,14 +1,134 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Career Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>Welcome to the homepage, {{ user.first_name|default:user.name }}!</h2>
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
 
+    <!-- Header container -->
+    <div class="main-header-container">
+        <div class="header container">
+            <!-- Logo image -->
+            <img src="{% static 'img/logo.png' %}" class="logo" alt="Company Logo">
+            
+            <!-- Navigation menu -->
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#">Jobs</a></li>
+                    <li><a href="#">Companies</a></li>
+                    <!-- Profile link with Django URL tag -->
+                    <li><a href="{% url 'profile' %}" class="profile-btn">Profile</a></li>
+                    <!-- Logout link triggers JS to submit hidden logout form -->
+                    <li><a href="javascript:void(0);" class="logout-trigger">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Hero section with title, description and search bar -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>Find Your Dream Job Today</h1>
+            <p>Explore thousands of job opportunities from top companies and build your career.</p>
+            
+            <!-- Simple search bar -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search by job title, keyword, or company...">
+                <button type="submit">Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Job listings section -->
+    <section class="job-listings-section">
+        <div class="container">
+            <h2>Popular Job Listings</h2>
+            
+            <div class="job-cards-container">
+                <!-- Single job card -->
+                <div class="job-card">
+                    <div>
+                        <h3>Software Engineer</h3>
+                        <p class="company">Tech</p>
+                        <p class="location">Pune, India</p>
+                        <p class="description">
+                            Developing scalable software solutions for cutting-edge projects. Requires strong Python/Java skills.
+                        </p>
+                    </div>
+                    <a href="#" class="view-details-btn">View Details</a>
+                </div>
+
+                <!-- Repeated job card - can be generated dynamically -->
+                <div class="job-card">
+                    <div>
+                        <h3>Software Engineer</h3>
+                        <p class="company">Tech</p>
+                        <p class="location">Pune, India</p>
+                        <p class="description">
+                            Developing scalable software solutions for cutting-edge projects. Requires strong Python/Java skills.
+                        </p>
+                    </div>
+                    <a href="#" class="view-details-btn">View Details</a>
+                </div>
+
+                <div class="job-card">
+                    <div>
+                        <h3>Software Engineer</h3>
+                        <p class="company">Tech</p>
+                        <p class="location">Pune, India</p>
+                        <p class="description">
+                            Developing scalable software solutions for cutting-edge projects. Requires strong Python/Java skills.
+                        </p>
+                    </div>
+                    <a href="#" class="view-details-btn">View Details</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Hidden logout form to safely handle POST logout -->
+    <form id="logoutForm" method="post" action="{% url 'logout' %}" class="logout-form">
+        {% csrf_token %}
+    </form>
+    
+    <!-- Footer section -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-nav">
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+            <p>&copy; 2025 Career Portal. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Wait until the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select the logout link by its class
+            const logoutLink = document.querySelector('.logout-trigger');
+            
+            if (logoutLink) {
+                // Attach click event to logout link
+                logoutLink.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default anchor behavior
+                    // Submit the hidden logout form to safely log out via POST request
+                    document.getElementById('logoutForm').submit();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
